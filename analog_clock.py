@@ -1,0 +1,189 @@
+from turtle import *
+import pyttsx3
+import time
+time.time()
+t=Turtle()
+a=pyttsx3.init()
+t.pensize(5)
+sc=Screen()
+# t.speed(-1)
+sc.tracer(0)
+t.hideturtle()
+sc.title("Rajput Analog Clock")
+c=['red','blue','green','yellow','magenta','cyan','black']
+sc.bgcolor(c[5])
+# bgpic(r'C:\Users\Aniket\Downloads\j5060.gif')
+sc.setup(800,800)
+def speek(h,m,s):
+        if (h==1 or h==2 or h==3 or h==4 or h==5 or h==6 or h==7 or h==8 or h==9 or h==10 or h==11 or h==12) and m==0 and s==0:
+            a.say(f'{h} baj gaye')
+            a.runAndWait()
+def dayal_clock(t,h,m,s):
+    t.pu()
+    t.goto(0, 300)
+    t.pencolor(c[6])
+    t.setheading(180)
+    t.pd()
+    t.circle(300)
+
+    for i in range(12):
+        t.pu()
+        t.goto(0, 0)
+        t.fd(300)
+        t.pd()
+        t.bk(30)
+        t.rt(30)
+
+    for i in range(60):
+        t.pu()
+        t.pensize(2)
+        t.goto(0, 0)
+        t.fd(300)
+        t.pd()
+        t.bk(15)
+        t.right(6)
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(57)
+    t.pencolor(c[1])
+    t.fd(232)
+    t.write(1,move=False,align="center",font=("Arial",25,"bold"))
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(25)
+    t.pencolor(c[1])
+    t.fd(242)
+    t.write(2, move=False, align="center", font=("Arial", 25, "bold"))
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(-5)
+    t.pencolor(c[1])
+    t.fd(255)
+    t.write(3, move=False, align="center", font=("Arial", 25, "bold"))
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(-35)
+    t.pencolor(c[1])
+    t.fd(265)
+    t.write(4, move=False, align="center", font=("Arial", 25, "bold"))
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(-62)
+    t.pencolor(c[1])
+    t.fd(265)
+    t.write(5, move=False, align="center", font=("Arial", 25, "bold"))
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(-90)
+    t.pencolor(c[1])
+    t.fd(265)
+    t.write(6, move=False, align="center", font=("Arial", 25, "bold"))
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(-118)
+    t.pencolor(c[1])
+    t.fd(265)
+    t.write(7, move=False, align="center", font=("Arial", 25, "bold"))
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(-146)
+    t.pencolor(c[1])
+    t.fd(262)
+    t.write(8, move=False, align="center", font=("Arial", 25, "bold"))
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(-175)
+    t.pencolor(c[1])
+    t.fd(250)
+    t.write(9, move=False, align="center", font=("Arial", 25, "bold"))
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(-208)
+    t.pencolor(c[1])
+    t.fd(235)
+    t.write(10, move=False, align="center", font=("Arial", 25, "bold"))
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(-238)
+    t.pencolor(c[1])
+    t.fd(230)
+    t.write(11, move=False, align="center", font=("Arial", 25, "bold"))
+
+    t.pu()
+    t.goto(0, 0)
+    t.setheading(-270)
+    t.pencolor(c[1])
+    t.fd(227)
+    t.write(12, move=False, align="center", font=("Arial", 25, "bold"))
+
+
+
+
+    t.pu()
+    t.pensize(5)
+    t.goto(0,0)
+    t.pd()
+    t.pencolor("black")
+    t.setheading(90)
+    angle=(h/12)*360
+    t.rt(angle)
+    t.pd()
+    t.bk(30)
+    t.fd(210)
+
+    t.pu()
+    t.goto(0,0)
+    t.pd()
+    t.pencolor("black")
+    t.setheading(90)
+    angle=(m/60)*360
+    t.rt(angle)
+    t.pd()
+    t.bk(30)
+    t.fd(220)
+
+    t.pu()
+    t.goto(0,0)
+    t.pd()
+    t.pencolor("red")
+    t.setheading(90)
+    angle=(s/60)*360
+    t.rt(angle)
+    t.pd()
+    t.bk(30)
+    t.fd(250)
+
+    t.pu()
+    t.goto(0,0)
+
+    t.pencolor('goldenrod')
+    t.setheading(268)
+    t.bk(150)
+    t.pd()
+    t.write('Aniket Singh Rajput',move=False, align="center", font=("Arial", 12, "italic"))
+    t.pu()
+    t.fd(360)
+    t.pd()
+    text=[h,m,s]
+    t.write(str(text), move=False, align="center", font=("Arial", 14, "normal"))
+
+while True:
+    h=int(time.strftime("%I"))
+    m=int(time.strftime("%M"))
+    s=int(time.strftime("%S"))
+    dayal_clock(t,h,m,s)
+    speek(h,m,s)
+    sc.update()
+    time.sleep(1)
+    t.clear()
