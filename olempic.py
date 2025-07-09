@@ -1,0 +1,25 @@
+from turtle import *
+t=Turtle()
+t.pensize(10)
+t.hideturtle()
+t.speed(-1)
+c=['blue','black','red','yellow','green']
+t.pu()
+t.fd(-200)
+t.pd()
+for i in range(3):
+    t.color(c[i%3])
+    t.circle(100)
+    t.pu()
+    t.fd(230)
+    t.pd()
+t.pu()
+t.goto(-85,-100)
+t.pd()
+for i in range(3,5):
+    t.color(c[i%5])
+    t.circle(100)
+    t.pu()
+    t.fd(230)
+    t.pd()
+done()

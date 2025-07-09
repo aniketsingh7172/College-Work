@@ -1,0 +1,25 @@
+from turtle import *
+t=Turtle()
+screen = Screen()
+l=['red','green','blue','orange','yellow']
+t.pensize(15)
+t.speed(-1)
+t.pu()
+t.goto(-500,-100)
+t.pd()
+def star():
+    t.hideturtle()
+    for i in range(5):
+        # screen.bgcolor(l[i%5])
+        t.color(l[i%5])
+        # t.fillcolor(l[i%3])
+        t.begin_fill()
+        t.fd(500)
+        t.left(144)
+        t.end_fill()
+star()
+t.pu()
+t.goto(100,-100)
+t.pd()
+star()
+done()
