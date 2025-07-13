@@ -25,7 +25,18 @@ def dayal_clock(t,h,m,s):
     t.setheading(180)
     t.pd()
     t.circle(300)
-
+    # t.pu()
+    # t.goto(0,0)
+    # t.pd()
+    # for m in range(25):
+    #     t.pu()
+    #     t.goto(0, 0)
+    #     t.pensize(3)
+    #     t.pencolor(c[m%6])
+    #     t.pd()
+    #     t.left(20)
+    #     t.circle(115)
+    # t.pencolor(c[6])
     for i in range(12):
         t.pu()
         t.goto(0, 0)
