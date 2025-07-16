@@ -34,13 +34,13 @@ class My_Notepad:
                 self.saveAs_file()
             elif self.res == False:
                 self.txt_area.delete(1.0, END)
+
     def save_file(self):
-        if self.current_open_file == 'no file selected':
-            self.saveAs_file()
-        else:
-            self.s = open(self.current_open_file.name, mode='w')
-            self.data = self.txt_area.get(1.0, END)
-            self.s.write(self.data)
+        self.s = open(current_open_file.name, 'w')
+        self.data = self.txt_area.get(1.0, END)
+        self.s.write(self.data)
+
+        self.saveAs_file()
     def saveAs_file(self):
         self.d = filedialog.asksaveasfile(defaultextension=".txt", mode='w')
         self.data = self.txt_area.get(1.0, END)
