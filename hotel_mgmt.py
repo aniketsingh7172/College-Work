@@ -1,6 +1,7 @@
 from tkinter import *
-from tkinter import messagebox, StringVar
+from tkinter import messagebox, StringVar,ttk
 from PIL import ImageTk, Image
+from datetime import datetime
 import pymysql
 
 taz=Tk()
@@ -12,6 +13,21 @@ width=taz.winfo_screenwidth()
 c=['#F31C20','#1CF31F','#FFE54A','black','white','#D17DF3']
 taz.config(bg='cyan')
 logo=ImageTk.PhotoImage(Image.open(r'C:\Users\Aniket\Downloads\Screenshot 2025-07-16 214243.png'))
+
+
+def only_char_input(G):
+    if G.isalpha() or G=='':
+        return True
+    return False
+callback=taz.register(only_char_input)
+# for digit
+def only_numeric_input(G):
+    if G.isdigit() or G=='':
+        return True
+    return False
+callback1=taz.register(only_numeric_input)
+
+h_tv=ttk.Treeview(height=10,columns=('Name''Type','Rate'))
 def clear_screen():
     global taz
     for widgets in taz.winfo_children():
@@ -25,6 +41,33 @@ def back():
     back_Button.grid(row=1,rowspan=2, column=0, padx=10, pady=5)
     logoutButton = Button(taz, text="Logout", font=('arial',25,'bold'), fg="white", bg='red',bd=10, command=adminLogout)
     logoutButton.grid(row=1,rowspan=2 ,column=5, pady=5)
+
+
+def OnDoubleClick(event):
+    item=h_tv.selection()
+    itemNameVar1=h_tv.item(item,"text")
+    item_detail = h_tv.item(item, "values")
+    # print(itemNameVar1)
+    # print(item_detail)
+    itemName.set(itemNameVar1)
+    itemRate.set(item_detail[1])
+    itemType.set(item_detail[0])
+
+def getItemInTreeview():
+    # to delete already inserted data
+    records=h_tv.get_children()
+    for x in records:
+        h_tv.delete(x)
+    conn=pymysql.connect(host="localhost",user="root",db="rajput_hotel")
+    mycursor=conn.cursor(pymysql.cursors.DictCursor)
+    query1="select * from menu_items"
+    mycursor.execute(query1)
+    data=mycursor.fetchall()
+    # print(data)
+    for row in data:
+        h_tv.insert('','end',text=row['Name'],values=(row["Type"],row['Rate'],))
+    conn.close()
+    h_tv.bind("<Double-1>",OnDoubleClick)
 
 def add_Items():
     if itemName.get()=='' or itemType.get()=='' or itemRate.get()=='':
@@ -44,6 +87,7 @@ def add_Items():
         itemName.set('')
         itemType.set('')
         itemRate.set('')
+        getItemInTreeview()
 
 def update_item():
     if itemName.get()=='' or itemType.get()=='' or itemRate.get()=='':
@@ -64,12 +108,11 @@ def update_item():
         itemName.set('')
         itemType.set('')
         itemRate.set('')
+        getItemInTreeview()
 
 def delete_item():
     if itemName.get()=='' or itemType.get()=='' or itemRate.get()=='':
         messagebox.showerror("Error",'Please enter All Details')
-    elif itemRate.get().isdigit()==False:
-        messagebox.showerror('error','Rate is Alfabet not allowed')
     else:
         dbconfig()
         name = itemName.get()
@@ -79,11 +122,11 @@ def delete_item():
         val = (name)
         mycursor.execute(que_del, val)
         conn.commit()
-        messagebox.showinfo("Success", "Successfully Added Item")
+        messagebox.showinfo("Success", "Item Delete Successfully")
         itemName.set('')
         itemType.set('')
         itemRate.set('')
-
+        getItemInTreeview()
 
 
 itemName=StringVar()
@@ -94,10 +137,10 @@ def manage_restaurant():
     main_heading()
     back()
     labelmanage = LabelFrame(taz, text="              Insert Menu Items",font=("ariel", 35, "bold"), bg=c[5], fg="white")
-    labelmanage.grid(row=2,rowspan=3, column=0, columnspan=6, padx=0, pady=30)
+    labelmanage.grid(row=2,rowspan=3, column=0, columnspan=6, padx=0, pady=10)
 
     item_name_Label=Label(labelmanage ,text="Item Name",justify="left",font=("Eras Bold ITC",25,"bold"),bg=c[5])
-    item_name_Label.grid(row=3,column=1,padx=50,pady=5)
+    item_name_Label.grid(row=3,column=1,padx=30,pady=5)
 
     item_type_Label = Label(labelmanage , text="Item Type",font=("Eras Bold ITC",25,"bold"),bg=c[5])
     item_type_Label.grid(row=4, column=1, padx=50, pady=5)
@@ -107,12 +150,14 @@ def manage_restaurant():
 
 
     item_name_Entry=Entry(labelmanage ,font=('arial',20,'normal'),textvariable=itemName)
+    item_name_Entry.configure(validate="key", validatecommand=(callback, "%P"))
     item_name_Entry.grid(row=3,column=2,padx=30,pady=5)
 
     item_type_Entry=Entry(labelmanage ,font=('arial',20,'normal'),textvariable=itemType)
     item_type_Entry.grid(row=4, column=2, padx=30, pady=5)
 
     item_rate_Entry=Entry(labelmanage ,font=('arial',20,'normal'),textvariable=itemRate)
+    item_rate_Entry.configure(validate="key", validatecommand=(callback1, "%P"))
     item_rate_Entry.grid(row=5,column=2,padx=30,pady=5)
 
     loginButton=Button(labelmanage ,text="Update",font=('Eras Bold ITC',15,'normal'),width=8,fg=c[3],bg='yellow',bd=10,command=update_item)
@@ -121,11 +166,127 @@ def manage_restaurant():
     loginButton.grid(row=6, column=1,columnspan=3,padx=30, pady=10)
     loginButton=Button(labelmanage ,text="Delete",font=('Eras Bold ITC',15,'normal'),width=8,fg=c[4],bg='#F31C20',bd=10,command=delete_item)
     loginButton.grid(row=6, column=2,padx=30, pady=10)
+
+#####################  Treeviwe ###############
+    h_tv.grid(row=7,column=1,columnspan=4,padx=0, pady=10)
+    style = ttk.Style(taz)
+    style.theme_use('clam')
+    style.configure('Treeview',background='yellow',bg=c[2],fg=c[3])
+    tv_scrool1=Scrollbar(taz,orient='vertical',command=h_tv.yview)
+    tv_scrool1.grid(row=7,column=4,pady=12,padx=10,sticky='ns')
+
+    h_tv.configure(yscrollcommand=tv_scrool1.set)
+    h_tv.heading('#0',text='Item Name',anchor='center')
+    h_tv.heading('#1',text='Item Type',anchor='center')
+    h_tv.heading('#2',text='Item Price',anchor='center')
+    getItemInTreeview()
+############### Combo Data ##############
+def combo_input():
+    dbconfig()
+    mycursor.execute('select Name from menu_items')
+    datas=[]
+    for row in mycursor.fetchall():
+        datas.append(row[0])
+    return datas
+
+######################   optionCallback  ##################
+def optionCallback(*args):
+    global item_name
+    item_name=itemnamevar.get()
+    aa=rateList()
+    item_Rate.set(aa)
+    global v
+    for i in aa:
+        for j in i:
+            v=j
+
+############### ratelist ##########
+def rateList():
+    dbconfig()
+    que_rate = "select Rate from menu_items where Name=%s"
+    val = (item_name)
+    mycursor.execute(que_rate,val)
+    da=mycursor.fetchall()
+    print(da)
+    return da
+############# optionCallback1 #############
+def optionCallback1(*args):
+    global item_qty
+    item_qty=itemqtyvar.get()
+    final=int(v)*int(item_qty)
+    cast.set(final)
+
+global x
+x = datetime.now()
+dateTime=StringVar()
+dateTime.set(x)
+cust_Name=StringVar()
+con_No=StringVar()
+item_Rate=StringVar()
+itemqtyvar=StringVar()
+itemnamevar=StringVar()
+cast=StringVar()
+
 def bill():
     clear_screen()
     main_heading()
-    label_bill = Label(taz, text="Generate Bill", font=("ariel", 30, "bold"), bg="blue", fg="white")
-    label_bill.grid(row=1, column=0, columnspan=6, padx=0, pady=30)
+    labelbill = LabelFrame(taz, text="                   Generate Bill", font=("ariel", 35, "bold"), bg=c[5],
+                             fg="white")
+    labelbill.grid(row=2, rowspan=3, column=0, columnspan=6, padx=0, pady=10)
+
+    dateTime_Lable = Label(labelbill, text="Date & Time", justify="left", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    dateTime_Lable.grid(row=3, column=1, padx=30, pady=5)
+
+    cu_Name_Label = Label(labelbill, text="Customer Name", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    cu_Name_Label.grid(row=4, column=1, padx=50, pady=5)
+
+    co_no_Label = Label(labelbill, text="Contact No.", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    co_no_Label.grid(row=5, column=1, padx=50, pady=5)
+
+    i_name_Label = Label(labelbill, text="Select Item Name", justify="left", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    i_name_Label.grid(row=6, column=1, padx=30, pady=5)
+
+    i_rate_Label = Label(labelbill, text="Item Price", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    i_rate_Label.grid(row=7, column=1, padx=50, pady=5)
+
+    item_qt_Label = Label(labelbill, text="Item Qt.", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    item_qt_Label.grid(row=8, column=1, padx=50, pady=5)
+
+    i_rate_Label = Label(labelbill, text="Total Price", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    i_rate_Label.grid(row=9, column=1, padx=50, pady=5)
+
+    dateTime_Entry=Entry(labelbill ,font=('arial',20,'normal'),textvariable=dateTime)
+    dateTime_Entry.configure(validate="key", validatecommand=(callback1, "%P"))
+    dateTime_Entry.grid(row=3,column=2,padx=30,pady=5)
+
+    cu_Name_Entry=Entry(labelbill ,font=('arial',20,'normal'),textvariable=cust_Name)
+    cu_Name_Entry.configure(validate="key", validatecommand=(callback, "%P"))
+    cu_Name_Entry.grid(row=4, column=2, padx=30, pady=5)
+
+    co_no_Entry=Entry(labelbill,font=('arial',20,'normal'),textvariable=con_No)
+    co_no_Entry.configure(validate="key", validatecommand=(callback1, "%P"))
+    co_no_Entry.grid(row=5,column=2,padx=30,pady=5)
+
+    i=combo_input()
+    i_name=ttk.Combobox(labelbill,font=('arial',19,'normal'),values=i,textvariable=itemnamevar)
+    i_name.set('Select Item')
+    itemnamevar.trace('w', optionCallback)
+    i_name.grid(row=6,column=2,padx=30,pady=5)
+
+
+    item_rate_Entry=Entry(labelbill ,font=('arial',20,'normal'),textvariable=item_Rate)
+    item_rate_Entry.grid(row=7,column=2,padx=30,pady=5)
+
+    l=[1,2,3,4,5]
+    item_qt=ttk.Combobox(labelbill,font=('arial',19,'normal'),values=l,textvariable=itemqtyvar)
+    itemqtyvar.trace('w', optionCallback1)
+    item_qt.grid(row=8,column=2,padx=30,pady=5)
+    # item_qt.configure(validate="key", validatecommand=(callback, "%P"))
+    # item_qt.configure(validate="Key", validatecommand=(callback1, "%P"))
+
+    total_cost_Entry = Entry(labelbill, font=('arial', 20, 'normal'), textvariable=cast)
+    total_cost_Entry.grid(row=9, column=2, padx=30, pady=5)
+
     back()
 def adminLogout():
     clear_screen()
