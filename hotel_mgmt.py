@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import messagebox, StringVar,ttk
+from tkinter import messagebox, StringVar,ttk,filedialog
 from PIL import ImageTk, Image
 from datetime import datetime
 import pymysql
@@ -7,11 +7,9 @@ import pymysql
 taz=Tk()
 taz.title('Taz Hotel')
 height=taz.winfo_screenheight()
-#print(height)
 width=taz.winfo_screenwidth()
-# print(width)
-c=['#F31C20','#1CF31F','#FFE54A','black','white','#D17DF3']
-taz.config(bg='cyan')
+c=['#F31C20','#1CF31F','#FFE54A','black','white','#a85a31','#D17DF3','red','cyan','#c8d9b0',"magenta",'#b3c677','#9514D2']
+taz.config(bg=c[9])
 logo=ImageTk.PhotoImage(Image.open(r'C:\Users\Aniket\Downloads\Screenshot 2025-07-16 214243.png'))
 
 
@@ -20,7 +18,8 @@ def only_char_input(G):
         return True
     return False
 callback=taz.register(only_char_input)
-# for digit
+
+
 def only_numeric_input(G):
     if G.isdigit() or G=='':
         return True
@@ -28,6 +27,7 @@ def only_numeric_input(G):
 callback1=taz.register(only_numeric_input)
 
 h_tv=ttk.Treeview(height=10,columns=('Name''Type','Rate'))
+h_tv1=ttk.Treeview(height=5,columns=('' '','','',''))
 def clear_screen():
     global taz
     for widgets in taz.winfo_children():
@@ -42,16 +42,15 @@ def back():
     logoutButton = Button(taz, text="Logout", font=('arial',25,'bold'), fg="white", bg='red',bd=10, command=adminLogout)
     logoutButton.grid(row=1,rowspan=2 ,column=5, pady=5)
 
-
+#################### OnDoubleClick ####################
 def OnDoubleClick(event):
     item=h_tv.selection()
-    itemNameVar1=h_tv.item(item,"text")
-    item_detail = h_tv.item(item, "values")
-    # print(itemNameVar1)
-    # print(item_detail)
+    itemNameVar1=h_tv.item(item,'text')
+    item_detail = h_tv.item(item,'values')
     itemName.set(itemNameVar1)
     itemRate.set(item_detail[1])
     itemType.set(item_detail[0])
+#########################################################
 
 def getItemInTreeview():
     # to delete already inserted data
@@ -171,15 +170,15 @@ def manage_restaurant():
     h_tv.grid(row=7,column=1,columnspan=4,padx=0, pady=10)
     style = ttk.Style(taz)
     style.theme_use('clam')
-    style.configure('Treeview',background='yellow',bg=c[2],fg=c[3])
+    style.configure('Treeview',background='#b3c677',bg=c[2],fieldbackground=c[4])
     tv_scrool1=Scrollbar(taz,orient='vertical',command=h_tv.yview)
     tv_scrool1.grid(row=7,column=4,pady=12,padx=10,sticky='ns')
-
     h_tv.configure(yscrollcommand=tv_scrool1.set)
     h_tv.heading('#0',text='Item Name',anchor='center')
     h_tv.heading('#1',text='Item Type',anchor='center')
     h_tv.heading('#2',text='Item Price',anchor='center')
     getItemInTreeview()
+
 ############### Combo Data ##############
 def combo_input():
     dbconfig()
@@ -199,7 +198,7 @@ def optionCallback(*args):
     for i in aa:
         for j in i:
             v=j
-
+    # item_Rate.set(v)
 ############### ratelist ##########
 def rateList():
     dbconfig()
@@ -216,43 +215,154 @@ def optionCallback1(*args):
     final=int(v)*int(item_qty)
     cast.set(final)
 
-global x
-x = datetime.now()
+
+def save():
+    if dateTime.get()=='' or cust_Name.get()=='' or con_No.get()=='' or itemnamevar.get()==''or item_Rate.get()=='' or itemqtyvar.get()==''or cast.get()=='':
+        messagebox.showerror("Error",'Please enter All Details')
+    else:
+        dbconfig()
+        dt = dateTime.get()
+        c_n = cust_Name.get()
+        c_no = con_No.get()
+        i_na = itemnamevar.get()
+        i_ra = v
+        i_qt = itemqtyvar.get()
+        t_p = cast.get()
+        print(dt,c_n,c_no,i_na,i_ra,i_qt,t_p)
+        que_i = "insert into g_bill (Date_Time,	Cust_Name,	Cust_m_No,	Item_Name,	Item_Rate,	Item_Qty,Total) values (%s, %s, %s,%s, %s, %s, %s)"
+        val = (dt,c_n,c_no,i_na,i_ra,i_qt,t_p)
+        mycursor.execute(que_i, val)
+        conn.commit()
+        messagebox.showinfo("Success", "Successfully Added Item")
+        dateTime.set(dt)
+        cust_Name.set('')
+        con_No.set('')
+        itemnamevar.set('Select Item')
+        item_Rate.set('')
+        # itemqtyvar.set('Select Quty')
+        cast.set('')
+def print_sc():
+    clear_screen()
+    main_heading()
+    back_Button = Button(taz, text="Back", font=('arial', 25, 'bold'), fg="white",bg='blue', bd=10, command=bill)
+    back_Button.grid(row=1, column=0, padx=5, pady=5)
+
+    logoutButton = Button(taz, text="Logout", font=('arial',25,'bold'), fg="white", bg='red',bd=10, command=adminLogout)
+    logoutButton.grid(row=1 ,column=4)
+
+    # labelprint=Frame(taz,bg='blue',bd=10,)
+    # labelprint.grid(row=2,rowspan=4, column=0, padx=500, pady=100)
+    labelprint1 = Label(taz, text="Bill Detail", font=("ariel", 35, "bold"),bg=c[9])
+    labelprint1.grid(row=1,column=1, columnspan=3, padx=0, pady=10)
+
+    labelprint1 = Label(taz, text="Double click on Treeview to Print Bill", font=("ariel", 15, "bold"),bg=c[9], fg=c[7])
+    labelprint1.grid(row=2,column=1, columnspan=3, padx=0, pady=10)
+
+    h_tv1.grid(row=3,column=1,padx=80, pady=0)
+    style = ttk.Style(taz)
+    style.theme_use('clam')
+    style.configure('Treeview',background='yellow',bg=c[2],fieldbackground=c[5])
+    tv_scrool2=Scrollbar(taz,orient='vertical',command=h_tv1.xview)
+    tv_scrool2.grid(row=3,column=2,sticky='ns')
+
+    h_tv1.configure(yscrollcommand=tv_scrool2.set)
+    h_tv1.heading('#0',text='Date & Time')
+    h_tv1.heading('#1',text='Name',anchor='center')
+    h_tv1.heading('#2',text='Mobile No.',anchor='center')
+    h_tv1.heading('#3',text='Selected Food',anchor='center')
+    # h_tv1.heading('#4',text='Item Rate & Qty',anchor='center')
+    h_tv1.heading('#4',text='Total Cost',anchor='center')
+
+    records=h_tv1.get_children()
+    for x in records:
+        h_tv1.delete(x)
+    conn=pymysql.connect(host="localhost",user="root",db="rajput_hotel")
+    mycursor=conn.cursor(pymysql.cursors.DictCursor)
+    query2="select * from g_bill"
+    mycursor.execute(query2)
+    data=mycursor.fetchall()
+    # print(data)
+    for row in data:
+        h_tv1.insert('','end',text=row['Date_Time'],values=(row["Cust_Name"],row['Cust_m_No'],row['Item_Name'],row['Total']))
+    conn.close()
+    h_tv1.bind("<Double-1>",OnDoubleClick1)
+
+#################### OnDoubleClick ####################
+def OnDoubleClick1(event):
+    item=h_tv1.selection()
+    global itemNameVar2
+    itemNameVar2=h_tv1.item(item,'text')
+    item_detail1 = h_tv1.item(item,'values')
+    receipt()
+
+################### receipt() ##################
+def receipt():
+    bill_String=''
+    bill_String+='====================== Rajput Hotel =====================\n\n'
+    bill_String +='==================== Customer Detail ====================\n\n'
+
+    dbconfig()
+    billqury= "select * from g_bill where Date_Time = '{}';".format(itemNameVar2)
+    mycursor.execute(billqury)
+    data1=mycursor.fetchall()
+    for row in data1:
+        bill_String+="{}{:<19}{:5}\n".format("Date/Time :-"," ",row[1])
+        bill_String += "{}{:15}{:20}\n".format("Customer Name :-", " ", row[2])
+        bill_String += "{}{:<17}{:10}\n".format("Contact No :- ", " ", row[3])
+        bill_String += '\n====================== Item Detail ======================\n'
+        bill_String += "{:<19}{:<13}{:<15}{:<18}".format("Item Name", "Rate","Quantity","Total Cost")
+        bill_String += "\n{:<19}{:<13}{:<15}{:<18}".format(row[4], row[5],row[6],row[7])
+        bill_String += "\n========================================================="
+        bill_String += "\n{:<15}{:<15}{:<10}\n".format(""," Total Cost=",row[7])
+        bill_String += "\n******************** Thank You **************************"
+        bill_String += "\n\n**************** Please Visit Again *********************"
+
+    bill_File =filedialog.asksaveasfile(mode='w', defaultextension=".txt",filetypes=(('Text Files', '*.txt'),))
+    if bill_File is None:
+        messagebox.showerror("Error", "No file selected")
+    else:
+        bill_File.write(bill_String)
+        bill_File.close()
+        mycursor.close()
+        messagebox.showinfo("Success", "Rajput Hotel Bill Saved")
+
+########################################################################################
+
 dateTime=StringVar()
-dateTime.set(x)
+dateTime.set(datetime.now().strftime("%d-%m-%Y %I:%M:%S %p"))
 cust_Name=StringVar()
 con_No=StringVar()
 item_Rate=StringVar()
 itemqtyvar=StringVar()
 itemnamevar=StringVar()
 cast=StringVar()
-
 def bill():
     clear_screen()
     main_heading()
-    labelbill = LabelFrame(taz, text="                   Generate Bill", font=("ariel", 35, "bold"), bg=c[5],
+    back()
+    labelbill = LabelFrame(taz, text="                   Generate Bill", font=("ariel", 35, "bold"), bg=c[12],
                              fg="white")
-    labelbill.grid(row=2, rowspan=3, column=0, columnspan=6, padx=0, pady=10)
+    labelbill.grid(row=2,rowspan=4, column=0, columnspan=6, padx=0, pady=10)
 
-    dateTime_Lable = Label(labelbill, text="Date & Time", justify="left", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    dateTime_Lable = Label(labelbill, text="Date & Time", justify="left", font=("Eras Bold ITC", 25, "bold"), bg=c[12])
     dateTime_Lable.grid(row=3, column=1, padx=30, pady=5)
 
-    cu_Name_Label = Label(labelbill, text="Customer Name", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    cu_Name_Label = Label(labelbill, text="Customer Name", font=("Eras Bold ITC", 25, "bold"), bg=c[12])
     cu_Name_Label.grid(row=4, column=1, padx=50, pady=5)
 
-    co_no_Label = Label(labelbill, text="Contact No.", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    co_no_Label = Label(labelbill, text="Contact No.", font=("Eras Bold ITC", 25, "bold"), bg=c[12])
     co_no_Label.grid(row=5, column=1, padx=50, pady=5)
 
-    i_name_Label = Label(labelbill, text="Select Item Name", justify="left", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    i_name_Label = Label(labelbill, text="Select Item Name", justify="left", font=("Eras Bold ITC", 25, "bold"), bg=c[12])
     i_name_Label.grid(row=6, column=1, padx=30, pady=5)
 
-    i_rate_Label = Label(labelbill, text="Item Price", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    i_rate_Label = Label(labelbill, text="Item Price", font=("Eras Bold ITC", 25, "bold"), bg=c[12])
     i_rate_Label.grid(row=7, column=1, padx=50, pady=5)
 
-    item_qt_Label = Label(labelbill, text="Item Qt.", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    item_qt_Label = Label(labelbill, text="Item Qt.", font=("Eras Bold ITC", 25, "bold"), bg=c[12])
     item_qt_Label.grid(row=8, column=1, padx=50, pady=5)
 
-    i_rate_Label = Label(labelbill, text="Total Price", font=("Eras Bold ITC", 25, "bold"), bg=c[5])
+    i_rate_Label = Label(labelbill, text="Total Price", font=("Eras Bold ITC", 25, "bold"), bg=c[12])
     i_rate_Label.grid(row=9, column=1, padx=50, pady=5)
 
     dateTime_Entry=Entry(labelbill ,font=('arial',20,'normal'),textvariable=dateTime)
@@ -279,15 +389,23 @@ def bill():
 
     l=[1,2,3,4,5]
     item_qt=ttk.Combobox(labelbill,font=('arial',19,'normal'),values=l,textvariable=itemqtyvar)
+    item_qt.set('Select Quty')
+    item_qt.set('Select Quty')
     itemqtyvar.trace('w', optionCallback1)
     item_qt.grid(row=8,column=2,padx=30,pady=5)
-    # item_qt.configure(validate="key", validatecommand=(callback, "%P"))
-    # item_qt.configure(validate="Key", validatecommand=(callback1, "%P"))
 
     total_cost_Entry = Entry(labelbill, font=('arial', 20, 'normal'), textvariable=cast)
     total_cost_Entry.grid(row=9, column=2, padx=30, pady=5)
 
-    back()
+    saveButton = Button(labelbill, text="Save", font=('Eras Bold ITC', 15, 'normal'), width=8, fg=c[3], bg=c[1],
+                         bd=10, command=save)
+    saveButton.grid(row=10, column=1, columnspan=3, padx=30, pady=10)
+
+    saveButton = Button(labelbill, text="Print Bill", font=('Eras Bold ITC', 15, 'normal'), width=8, fg=c[3], bg=c[2],
+                        bd=10, command=print_sc)
+    saveButton.grid(row=10, column=2, columnspan=3, padx=30, pady=10)
+
+
 def adminLogout():
     clear_screen()
     main_heading()
@@ -318,7 +436,7 @@ def adminLogin():
             passwordVar.set("")
 #main heading
 def main_heading():
-    label=Label(taz,image=logo,text="Rajput Hotel Management System",fg="red",bg="yellow",font=("comic sans Ms",55,"bold"),padx=250,pady=30)
+    label=Label(taz,image=logo,fg="red",bg="yellow",font=("comic sans Ms",55,"bold"),padx=250,pady=30)
     label.grid(row=0,columnspan=6)
 
 usernameVar=StringVar()
@@ -326,7 +444,7 @@ passwordVar=StringVar()
 def loginwindow():
     usernameVar.set("")
     passwordVar.set("")
-    labellogin=LabelFrame(taz,text="             Admin Login",font=("ariel",35,"bold"),bg="magenta",fg="white")
+    labellogin=LabelFrame(taz,text="             Admin Login",font=("ariel",35,"bold"),bg=c[10],fg='white')
     labellogin.grid(row=1, columnspan=6,padx=10,pady=50)
 
     usernameLabel=Label(labellogin,text="User Name",font=("ariel",25,"bold"),bg='magenta')
@@ -351,10 +469,10 @@ def welcomewindow():
     labelwelcome = Label(taz, text=" Welcome Dashboard ",font=("ariel",30,"bold"),bg="blue",fg="white")
     labelwelcome.grid(row=1, column=0, columnspan=6, padx=10, pady=30)
 
-    manage_restaurantButton = Button(taz, text="Manage Restaurant", font=('arial',25,'normal'),width=30, fg="green", bd=10, command=manage_restaurant)
+    manage_restaurantButton = Button(taz, text="Manage Restaurant", font=('arial',25,'normal'),width=30,bg=c[5] ,fg=c[4], bd=10, command=manage_restaurant)
     manage_restaurantButton.grid(row=4, column=0, columnspan=6, padx=10, pady=10)
 
-    bill_Button = Button(taz, text="Generate Bill", font=('arial',25,'normal'),width=30, fg="green", bd=10, command=bill)
+    bill_Button = Button(taz, text="Generate Bill", font=('arial',25,'normal'),width=30,bg=c[12], fg=c[4], bd=10, command=bill)
     bill_Button.grid(row=5, column=0, columnspan=6, padx=20, pady=10)
 
     logoutButton = Button(taz, text="Logout", font=('arial',25,'normal'),width=30, fg="white",bg='red', bd=10, command=adminLogout)
