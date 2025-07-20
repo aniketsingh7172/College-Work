@@ -206,7 +206,7 @@ def rateList():
     val = (item_name)
     mycursor.execute(que_rate,val)
     da=mycursor.fetchall()
-    print(da)
+    # print(da)
     return da
 ############# optionCallback1 #############
 def optionCallback1(*args):
@@ -228,7 +228,7 @@ def save():
         i_ra = v
         i_qt = itemqtyvar.get()
         t_p = cast.get()
-        print(dt,c_n,c_no,i_na,i_ra,i_qt,t_p)
+        # print(dt,c_n,c_no,i_na,i_ra,i_qt,t_p)
         que_i = "insert into g_bill (Date_Time,	Cust_Name,	Cust_m_No,	Item_Name,	Item_Rate,	Item_Qty,Total) values (%s, %s, %s,%s, %s, %s, %s)"
         val = (dt,c_n,c_no,i_na,i_ra,i_qt,t_p)
         mycursor.execute(que_i, val)
